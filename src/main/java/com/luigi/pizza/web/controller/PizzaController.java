@@ -48,6 +48,11 @@ public class PizzaController {
         return ResponseEntity.ok(pizzaService.getPizzaByDescriptionNot(description));
     }
 
+    @GetMapping("/cheapest/{price}")
+    public ResponseEntity<List<PizzaEntity>> getCheapestPizzas(@PathVariable Double price) {
+        return ResponseEntity.ok(pizzaService.getCheapestPizzas(price));
+    }
+
     @GetMapping("/vegan")
     public ResponseEntity<List<PizzaEntity>> getAvailableVeganPizzas() {
         return ResponseEntity.ok(pizzaService.getAvailableVeganPizzas());
