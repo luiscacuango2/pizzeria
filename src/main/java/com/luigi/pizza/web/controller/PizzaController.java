@@ -3,6 +3,7 @@ package com.luigi.pizza.web.controller;
 import com.luigi.pizza.persistence.entity.PizzaEntity;
 import com.luigi.pizza.service.PizzaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,9 @@ public class PizzaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PizzaEntity>> getAllPizzas() {
-        return ResponseEntity.ok(pizzaService.getAllPizzas());
+    public ResponseEntity<Page<PizzaEntity>> getAllPizzas(@RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "8") int elements) {
+        return ResponseEntity.ok(pizzaService.getAllPizzas(page, elements));
     }
 
     @GetMapping("/{idPizza}")
