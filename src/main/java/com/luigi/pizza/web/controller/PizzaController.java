@@ -38,6 +38,16 @@ public class PizzaController {
         return ResponseEntity.ok(pizzaService.getPizzaByName(name));
     }
 
+    @GetMapping("/description/{description}")
+    public ResponseEntity<List<PizzaEntity>> getPizzaByDescription(@PathVariable String description) {
+        return ResponseEntity.ok(pizzaService.getPizzaByDescription(description));
+    }
+
+    @GetMapping("/descriptionnot/{description}")
+    public ResponseEntity<List<PizzaEntity>> getPizzaByDescriptionNot(@PathVariable String description) {
+        return ResponseEntity.ok(pizzaService.getPizzaByDescriptionNot(description));
+    }
+
     @PostMapping
     public ResponseEntity<PizzaEntity> addPizza(@RequestBody PizzaEntity pizza) {
         if (pizza.getIdPizza() == null || !pizzaService.exists(pizza.getIdPizza())) {
