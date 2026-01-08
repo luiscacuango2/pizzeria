@@ -48,6 +48,11 @@ public class PizzaController {
         return ResponseEntity.ok(pizzaService.getPizzaByDescriptionNot(description));
     }
 
+    @GetMapping("/vegan")
+    public ResponseEntity<List<PizzaEntity>> getAvailableVeganPizzas() {
+        return ResponseEntity.ok(pizzaService.getAvailableVeganPizzas());
+    }
+
     @PostMapping
     public ResponseEntity<PizzaEntity> addPizza(@RequestBody PizzaEntity pizza) {
         if (pizza.getIdPizza() == null || !pizzaService.exists(pizza.getIdPizza())) {
