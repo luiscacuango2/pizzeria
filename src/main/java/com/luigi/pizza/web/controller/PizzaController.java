@@ -3,6 +3,7 @@ package com.luigi.pizza.web.controller;
 import com.luigi.pizza.persistence.entity.PizzaEntity;
 import com.luigi.pizza.service.PizzaService;
 import com.luigi.pizza.service.dto.UpdatePizzaPriceDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,7 @@ public class PizzaController {
     }
 
     @PostMapping
-    public ResponseEntity<PizzaEntity> addPizza(@RequestBody PizzaEntity pizza) {
+    public ResponseEntity<PizzaEntity> addPizza(@Valid @RequestBody PizzaEntity pizza) {
         if (pizza.getIdPizza() == null || !pizzaService.exists(pizza.getIdPizza())) {
             return ResponseEntity.ok(pizzaService.savePizza(pizza));
         }
