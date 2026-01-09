@@ -1,13 +1,13 @@
 package com.luigi.pizza.service;
 
 import com.luigi.pizza.persistence.entity.OrderEntity;
+import com.luigi.pizza.persistence.projection.OrderSummary;
 import com.luigi.pizza.persistence.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -38,4 +38,11 @@ public class OrderService {
         return this.orderRepository.findAllByDeliveryMethodIn(deliveryMethods);
     }
 
+    public List<OrderEntity> getCustomerOrders(Integer idCustomer) {
+        return this.orderRepository.findCustomerOrders(idCustomer);
+    }
+
+    public OrderSummary getSummary(Integer idOrder) {
+        return this.orderRepository.findSummary(idOrder);
+    }
 }
