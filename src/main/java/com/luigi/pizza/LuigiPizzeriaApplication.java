@@ -10,7 +10,6 @@ import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableJpaRepositories
-@EnableJpaAuditing
 public class LuigiPizzeriaApplication {
 
 	public static void main(String[] args) {
