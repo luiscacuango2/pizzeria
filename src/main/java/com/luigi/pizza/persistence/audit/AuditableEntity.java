@@ -16,24 +16,23 @@ import java.time.LocalDateTime;
 public class AuditableEntity {
 
     // Usuario que Creo
-    @Column(name = "created_by", updatable = false)
     @CreatedBy
+    @Column(name = "created_by", updatable = false)
     private String createdBy;
 
     // Fecha que creo
-    @Column(name = "created_date", updatable = false)
     @CreatedDate
+    @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
     // Usuario que Modifico
-    @Column(name = "modified_by")
     @LastModifiedBy
+    @Column(name = "modified_by")
     private String modifiedBy;
 
     // Fecha que modifico
-    @LastModifiedBy
-    @Column(name = "modified_date")
     @LastModifiedDate
+    @Column(name = "modified_date")
     private LocalDateTime modifiedDate;
 
 }

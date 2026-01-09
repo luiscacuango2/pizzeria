@@ -12,7 +12,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())  // Aqui toca poner disable(), nueva forma de configurar
                 .cors(Customizer.withDefaults())
                 // 1. Configuración de Autorización
                 .authorizeHttpRequests(auth -> auth
