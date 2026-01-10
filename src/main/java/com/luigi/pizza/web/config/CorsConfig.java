@@ -13,7 +13,6 @@ public class CorsConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-
         // Orígenes permitidos (URL de tu frontend de Vite)
         corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:5173"));
         // Métodos permitidos
