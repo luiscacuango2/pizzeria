@@ -19,9 +19,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 // 1. Configuración de Autorización
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/pizzas/**").hasAnyRole("ADMIN", "CUSTOMER")
-                        .requestMatchers(HttpMethod.POST, "/pizza/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/pizzas/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, "/api/pizza/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
+                        .requestMatchers("/api/orders/random").hasAuthority("random_order")
                         .requestMatchers("/api/orders/**").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
