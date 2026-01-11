@@ -1,7 +1,7 @@
 package com.luigi.pizza.web.controller;
 
 import com.luigi.pizza.service.dto.LoginDto;
-import com.luigi.pizza.web.config.Jwtutil;
+import com.luigi.pizza.web.config.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
-    private final Jwtutil jwtutil;
+    private final JwtUtil jwtutil;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, Jwtutil jwtutil) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtutil) {
         this.authenticationManager = authenticationManager;
         this.jwtutil = jwtutil;
     }
