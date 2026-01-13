@@ -84,15 +84,20 @@ El sistema utiliza una relación **1:N** entre `pizza_order` y `order_item` con 
     ```
 
 ---
-## Pruebas con Postman
+## Pruebas y QA con Postman
 
-Para facilitar la integración, hemos incluido una colección de Postman lista para usar:
+Se incluye una colección completa para validar el flujo de **Auditoría Total** y los **Stored Procedures**.
 
-1. **Importar Colección**: Localiza el archivo `docs/postman/Luigi_Pizza_API.postman_collection.json`.
-2. **Configurar Entorno**: Asegúrate de setear la variable `{{base_url}}` (ej. `http://localhost:8080`).
-3. **Autenticación**:
-    * El endpoint de login te devolverá un JWT.
-    * La colección está configurada para usar **Inherit auth from parent**, por lo que solo debes pegar el token en la raíz de la carpeta.
+### Pasos para importar:
+1. Abra Postman.
+2. Haga clic en el botón **Import** (esquina superior izquierda).
+3. Arrastre el archivo ubicado en: `docs/postman/pizzeria.postman_collection.json`.
+4. Configure el **Environment** con la variable `url` apuntando a `http://localhost:8080`.
+
+### Endpoints Incluidos:
+* **Auth**: Login y obtención de JWT.
+* **Auditoría**: Consulta de logs de creación.
+* **Orders**: Generación de orden aleatoria (20% OFF).
 ---
 
 ## Guía de Uso: Promoción Random 20% OFF
