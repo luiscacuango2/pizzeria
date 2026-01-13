@@ -1,13 +1,11 @@
 package com.luigi.pizza.web.controller;
 
-import com.luigi.pizza.persistence.entity.PizzaEntity;
 import com.luigi.pizza.service.PizzaService;
 import com.luigi.pizza.service.dto.PizzaDto;
 import com.luigi.pizza.service.dto.UpdatePizzaPriceDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,14 +22,14 @@ public class OrderEntity extends AuditableEntity {
     @Column(name = "id_order", nullable = false)
     private Integer idOrder;
 
-    @Column(name = "id_customer", nullable = false, length = 15)
+    @Column(name = "id_customer", nullable = false)
     private Integer idCustomer;
 
-    @Column(name = "order_date", nullable = false)
+    @Column(name = "order_date", nullable = false, updatable = false)
     private LocalDateTime orderDate;
 
-    @Column(name = "total_value", nullable = false, columnDefinition = "DECIMAL(6,2)")
-    private Double totalValue;
+    @Column(name = "total_value", nullable = false, precision = 6, scale = 2)
+    private BigDecimal totalValue;
 
     @Column(name = "delivery_method", nullable = false, columnDefinition = "CHAR(1)")
     private String deliveryMethod;
@@ -36,13 +37,25 @@ public class OrderEntity extends AuditableEntity {
     @Column(name = "additional_notes", length = 200)
     private String additionalNotes;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    // saber en qué fase se encuentra el pedido
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
+
+    // --- RELACIONES OPTIMIZADAS ---
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_customer", referencedColumnName = "id_customer", insertable = false, updatable = false)
     @JsonIgnore
     private CustomerEntity customer;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OrderBy("price DESC")
-    private List<OrderItemEntity> orderItem;
+    private List<OrderItemEntity> items;
 
+    // --- AYUDAS PARA AUDITORÍA Y CICLO DE VIDA ---
+    @PrePersist
+    public void prePersist() {
+        if (this.orderDate == null) {
+            this.orderDate = LocalDateTime.now();
+        }
+    }
 }

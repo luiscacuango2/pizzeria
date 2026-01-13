@@ -2,15 +2,19 @@ package com.luigi.pizza.persistence.repository;
 
 import com.luigi.pizza.persistence.entity.OrderEntity;
 import com.luigi.pizza.persistence.projection.OrderSummary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface OrderRepository extends ListCrudRepository<OrderEntity, Integer> {
+public interface OrderRepository extends ListCrudRepository<OrderEntity, Integer>,
+        PagingAndSortingRepository<OrderEntity, Integer> {
     List<OrderEntity> findAllByOrderDateAfter(LocalDateTime date);
     List<OrderEntity> findAllByDeliveryMethodIn(List<String> deliveryMethods);
 
@@ -37,4 +41,10 @@ public interface OrderRepository extends ListCrudRepository<OrderEntity, Integer
 
     @Procedure(value = "take_random_pizza_order", outputParameterName = "order_taken")
     boolean saveRandomOrder(@Param("id_customer") Integer idCustommer, @Param("delivery_method") String deliveryMethod);
+
+    // Para consultas rápidas o reportes completos
+    List<OrderEntity> findByIdCustomer(Integer idCustomer);
+
+    // Para la vista de usuario o paneles administrativos pesados
+    Page<OrderEntity> findByIdCustomer(Integer idCustomer, Pageable pageable);
 }
