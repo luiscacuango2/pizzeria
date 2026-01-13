@@ -4,6 +4,9 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2.x-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Security](https://img.shields.io/badge/Security-JWT_Audited-success?style=for-the-badge)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
+![Rest API](https://img.shields.io/badge/Rest_API-009688?style=for-the-badge&logo=api&logoColor=white)
+![Testing](https://img.shields.io/badge/Tests-Passing-success?style=for-the-badge&logo=githubactions&logoColor=white)
 
 **Luigi's Pizza API** es una solución profesional para la gestión de pizzerías, diseñada bajo estándares de **Auditoría Total (Compliance 2026)**. El sistema integra una arquitectura desacoplada que combina la potencia de Spring Data JPA con la eficiencia de procedimientos almacenados en MySQL para procesos críticos de negocio.
 
@@ -80,6 +83,16 @@ El sistema utiliza una relación **1:N** entre `pizza_order` y `order_item` con 
     ./mvnw spring-boot:run
     ```
 
+---
+## Pruebas con Postman
+
+Para facilitar la integración, hemos incluido una colección de Postman lista para usar:
+
+1. **Importar Colección**: Localiza el archivo `docs/postman/Luigi_Pizza_API.postman_collection.json`.
+2. **Configurar Entorno**: Asegúrate de setear la variable `{{base_url}}` (ej. `http://localhost:8080`).
+3. **Autenticación**:
+    * El endpoint de login te devolverá un JWT.
+    * La colección está configurada para usar **Inherit auth from parent**, por lo que solo debes pegar el token en la raíz de la carpeta.
 ---
 
 ## Guía de Uso: Promoción Random 20% OFF
