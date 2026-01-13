@@ -40,13 +40,27 @@ public class SecurityConfig {
                 )
                 // 4. Configuración de Autorización (Reglas de acceso)
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Acceso Público
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/customers/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        // 2. Pizzas: Clientes ven, Admin gestiona
                         .requestMatchers(HttpMethod.GET, "/api/pizzas/**").hasAnyRole("ADMIN", "CUSTOMER")
-                        .requestMatchers(HttpMethod.POST, "/api/pizzas/**").hasRole("ADMIN") // Corregido el plural
+                        .requestMatchers(HttpMethod.POST, "/api/pizzas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/pizzas/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/pizzas/**").hasRole("ADMIN")
+                        // 3. Clientes: Lectura general y registro
+                        .requestMatchers(HttpMethod.GET, "/api/customers").hasRole("ADMIN") // Ver lista total es de Admin
+                        .requestMatchers(HttpMethod.GET, "/api/customers/{id}").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, "/api/customers").permitAll() // Permitir registro público si aplica
+                        .requestMatchers("/api/customers/search", "/api/customers/phone/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/customers/**").hasRole("ADMIN")
+                        // 4. Órdenes: El núcleo de la auditoría
                         .requestMatchers("/api/orders/random").hasAuthority("random_order")
+                        .requestMatchers(HttpMethod.GET, "/api/orders/customer/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/orders/*/status").hasRole("ADMIN")
                         .requestMatchers("/api/orders/**").hasRole("ADMIN")
+                        // auditoria
+                        .requestMatchers("/api/audit/**").hasRole("ADMIN")
+                        // 5. Cualquier otra ruta requiere estar logueado
                         .anyRequest().authenticated()
                 )
                 // 5. Agregar el filtro JWT antes del filtro de usuario/password estándar

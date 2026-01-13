@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,6 +70,7 @@ public class OrderController {
     }
 
     @PostMapping("/random")
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"}) // Restringir quién puede disparar promociones
     public ResponseEntity<Boolean> saveRandomOrder(@RequestBody RandomOrderDto dto) {
         // Simplemente pasamos el Record inmutable al servicio
         return ResponseEntity.ok(this.orderService.saveRandomOrder(dto));

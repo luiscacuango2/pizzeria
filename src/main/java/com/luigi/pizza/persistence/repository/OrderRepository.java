@@ -39,12 +39,23 @@ public interface OrderRepository extends ListCrudRepository<OrderEntity, Integer
         "po.total_value", nativeQuery = true)
     OrderSummary findSummary (@Param("idOrder") Integer idOrder);
 
+    /**
+     * Procedimiento optimizado para Auditoría Total.
+     * v_username asegura que sepamos quién ejecutó la promoción desde la DB.
+     */
     @Procedure(value = "take_random_pizza_order", outputParameterName = "order_taken")
-    boolean saveRandomOrder(@Param("id_customer") Integer idCustommer, @Param("delivery_method") String deliveryMethod);
+    boolean saveRandomOrder(
+            @Param("id_customer") String idCustomer,
+            @Param("delivery_method") String deliveryMethod,
+            @Param("v_username") String vUsername
+    );
 
     // Para consultas rápidas o reportes completos
     List<OrderEntity> findByIdCustomer(Integer idCustomer);
 
     // Para la vista de usuario o paneles administrativos pesados
     Page<OrderEntity> findByIdCustomer(Integer idCustomer, Pageable pageable);
+
+    // Para generar reportes de auditoria por usuario y rango de fechas
+    List<OrderEntity> findByCreatedByAndCreatedDateBetween(String createdBy, LocalDateTime start, LocalDateTime end);
 }

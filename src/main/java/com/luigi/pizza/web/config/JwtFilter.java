@@ -52,13 +52,15 @@ public class JwtFilter extends OncePerRequestFilter {
         User user = (User) this.userDetailsService.loadUserByUsername(username);
 
         // 4. Cargar al usuario en el contexto de seguridad SecurityContext, con 3 parámetros
+        // IMPORTANTE: Pasamos null (en vez de user.getPassword()) en credentials porque el JWT ya fue validado
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                user.getUsername(), user.getPassword(), user.getAuthorities()
+                user.getUsername(), null, user.getAuthorities()
         );
-        // Para agregar detalles de la autenticación
+        // Añadir detalles de la petición (IP, Sesión) necesarios para la Auditoría
         authenticationToken.setDetails(new WebAuthenticationDetails(request));
+        // Establecer la autenticación de forma global para este hilo (ThreadLocal)
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        System.out.println(authenticationToken);
+        // Continuar con la cadena de filtros
         filterChain.doFilter(request, response);
     }
 }

@@ -1,8 +1,11 @@
 package com.luigi.pizza.service;
 
+import com.luigi.pizza.persistence.audit.AuditUsername;
 import com.luigi.pizza.persistence.entity.OrderEntity;
+import com.luigi.pizza.persistence.entity.PizzaEntity;
 import com.luigi.pizza.persistence.projection.OrderSummary;
 import com.luigi.pizza.persistence.repository.OrderRepository;
+import com.luigi.pizza.service.dto.AuditReportDto;
 import com.luigi.pizza.service.dto.OrderDto;
 import com.luigi.pizza.service.dto.RandomOrderDto;
 import com.luigi.pizza.service.mapper.OrderMapper;
@@ -14,21 +17,26 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final AuditUsername auditUsername; // Inyectar componente de auditoría
     private final OrderMapper orderMapper;
     private final String DELIVERY = "D";
     private final String CARRYOUT = "C";
     private final String ON_SITE = "S";
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper) {
+    public OrderService(OrderRepository orderRepository, AuditUsername auditUsername, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
+        this.auditUsername = auditUsername;
         this.orderMapper = orderMapper;
     }
 
@@ -66,15 +74,15 @@ public class OrderService {
 
     @Transactional
     public Boolean saveRandomOrder(RandomOrderDto dto) {
-        OrderEntity orderEntity = new OrderEntity();
-        orderEntity.setIdCustomer(dto.idCustomer());
-        orderEntity.setDeliveryMethod(dto.deliveryMethod());
+        // Obtenemos el usuario logueado (o SYSTEM si falla)
+        String user = auditUsername.getCurrentAuditor().orElse("UNKNOWN_USER");
 
-        // Aquí sanitizamos antes de que JPA Auditing guarde el registro
-        orderEntity.setAdditionalNotes(SanitizerUtil.sanitize(dto.note()));
-
-        this.orderRepository.save(orderEntity);
-        return true;
+        // Ejecutamos el procedimiento con trazabilidad total
+        return this.orderRepository.saveRandomOrder(
+                String.valueOf(dto.idCustomer()),
+                dto.deliveryMethod(),
+                user
+        );
     }
 
     @Transactional
@@ -107,5 +115,23 @@ public class OrderService {
         // Al guardar, el AuditingEntityListener registrará quién hizo el cambio
         OrderEntity updatedOrder = this.orderRepository.save(order);
         return this.orderMapper.toDto(updatedOrder);
+    }
+
+    public List<AuditReportDto> getCustomerActivityReport(String username, LocalDate date) {
+        // Definimos el rango de tiempo para el día solicitado
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        // Buscamos las órdenes creadas por ese usuario en ese rango
+        return this.orderRepository.findByCreatedByAndCreatedDateBetween(username, startOfDay, endOfDay)
+                .stream()
+                .map(order -> new AuditReportDto(
+                        "ORDER",
+                        "CREATE",
+                        order.getCreatedBy(),
+                        order.getCreatedDate(),
+                        "Order ID: " + order.getIdOrder() + " - Status: " + order.getStatus()
+                ))
+                .collect(Collectors.toList());
     }
 }

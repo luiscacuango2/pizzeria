@@ -1,0 +1,7 @@
+-- 1. Insertar el usuario admin
+INSERT INTO user_pizzeria (username, password, email, locked, disabled)
+VALUES ('admin', '$2y$10$FVqtxBQDO7A8pGP9KE6epejMvMF3ISPIaYGg7IZDyS/d3Fuxpgx9a', 'admin@luigi.com', 0, 0);
+
+-- 2. Asignar el rol de ADMIN
+INSERT INTO user_role (username, role, granted_date)
+VALUES ('admin', 'ADMIN', NOW());
