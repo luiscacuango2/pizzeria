@@ -1,10 +1,13 @@
 package com.luigi.pizza.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.luigi.pizza.persistence.audit.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "order_item")
@@ -12,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderItemEntity {
+public class OrderItemEntity extends AuditableEntity implements Serializable {
     @Id
     @Column(name = "id_item", nullable = false)
     private Integer idItem;
@@ -24,7 +27,7 @@ public class OrderItemEntity {
     @Column(name = "id_pizza", nullable = false)
     private Integer idPizza;
 
-    @Column(nullable = false, columnDefinition = "DECIMAL(2,1)")
+    @Column(nullable = false, columnDefinition = "DECIMAL(3,1)")
     private Double quantity;
 
     @Column(nullable = false, columnDefinition = "DECIMAL(5,2)")

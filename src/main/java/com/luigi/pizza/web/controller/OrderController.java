@@ -1,8 +1,8 @@
 package com.luigi.pizza.web.controller;
 
-import com.luigi.pizza.persistence.entity.OrderEntity;
 import com.luigi.pizza.persistence.projection.OrderSummary;
 import com.luigi.pizza.service.OrderService;
+import com.luigi.pizza.service.dto.OrderDto;
 import com.luigi.pizza.service.dto.RandomOrderDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,22 +21,22 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderEntity>> getAllOrders() {
+    public ResponseEntity<List<OrderDto>> getAllOrders() {
         return ResponseEntity.ok(this.orderService.getAllOrder());
     }
 
     @GetMapping("/today")
-    public ResponseEntity<List<OrderEntity>> getTodayOrders() {
+    public ResponseEntity<List<OrderDto>> getTodayOrders() {
         return ResponseEntity.ok(this.orderService.getTodayOrders());
     }
 
     @GetMapping("/outside")
-    public ResponseEntity<List<OrderEntity>> getOutsideOrders() {
+    public ResponseEntity<List<OrderDto>> getOutsideOrders() {
         return ResponseEntity.ok(this.orderService.getOutsideOrders());
     }
 
     @GetMapping("/customer/{idCustomer}")
-    public ResponseEntity<List<OrderEntity>> getCustomerOrders(@PathVariable Integer idCustomer) {
+    public ResponseEntity<List<OrderDto>> getCustomerOrders(@PathVariable Integer idCustomer) {
         return ResponseEntity.ok(this.orderService.getCustomerOrders(idCustomer));
     }
 

@@ -3,7 +3,9 @@ package com.luigi.pizza.service;
 import com.luigi.pizza.persistence.entity.OrderEntity;
 import com.luigi.pizza.persistence.projection.OrderSummary;
 import com.luigi.pizza.persistence.repository.OrderRepository;
+import com.luigi.pizza.service.dto.OrderDto;
 import com.luigi.pizza.service.dto.RandomOrderDto;
+import com.luigi.pizza.service.mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -16,34 +18,35 @@ import java.util.List;
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
     private final String DELIVERY = "D";
     private final String CARRYOUT = "C";
     private final String ON_SITE = "S";
 
     @Autowired
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
+        this.orderMapper = orderMapper;
     }
 
-    public List<OrderEntity> getAllOrder() {
-        List<OrderEntity> orders = orderRepository.findAll();
-        orders.forEach(o -> System.out.println(o.getCustomer().getName()));
-        return orders;
+    public List<OrderDto> getAllOrder() {
+        return this.orderMapper.toDtoList(this.orderRepository.findAll());
     }
 
-    public List<OrderEntity> getTodayOrders() {
+    public List<OrderDto> getTodayOrders() {
         LocalDateTime today = LocalDate.now().atTime(0, 0);
-        return this.orderRepository.findAllByOrderDateAfter(today);
+        return this.orderMapper.toDtoList(this.orderRepository.findAllByOrderDateAfter(today));
     }
 
-    public List<OrderEntity> getOutsideOrders() {
+    public List<OrderDto> getOutsideOrders() {
         List<String> deliveryMethods = List.of(DELIVERY, CARRYOUT); // Arrays.asList(DELIVERY, CARRYOUT);
-        return this.orderRepository.findAllByDeliveryMethodIn(deliveryMethods);
+        return this.orderMapper.toDtoList(this.orderRepository.findAllByDeliveryMethodIn(deliveryMethods));
     }
 
     @Secured("ROLE_ADMIN")
-    public List<OrderEntity> getCustomerOrders(Integer idCustomer) {
-        return this.orderRepository.findCustomerOrders(idCustomer);
+    public List<OrderDto> getCustomerOrders(Integer idCustomer) {
+        List<OrderEntity> orders = this.orderRepository.findCustomerOrders(idCustomer);
+        return this.orderMapper.toDtoList(orders);
     }
 
     public OrderSummary getSummary(Integer idOrder) {

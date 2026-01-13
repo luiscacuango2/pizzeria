@@ -33,13 +33,14 @@ public class JwtFilter extends OncePerRequestFilter {
         // 1. Validar que sea un Header Authorization válido
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (authHeader == null || authHeader.isEmpty() || !authHeader.startsWith("Bearer")) {
+        if (authHeader == null || authHeader.isEmpty() || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         // 2. Validar que el JWT sea válido
-        String jwt = authHeader.split(" ")[1].trim();
+//        String jwt = authHeader.split(" ")[1].trim();
+        String jwt = authHeader.substring(7).trim(); // Más eficiente que split
 
         if (!this.jwtUtil.isValid(jwt)) {
             filterChain.doFilter(request, response);

@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.type.NumericBooleanConverter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
@@ -21,6 +23,8 @@ import java.io.Serializable;
 @Setter
 @ToString
 @NoArgsConstructor
+// Invertirá la lógica: true = activo, false = borrado.
+//@SoftDelete(columnName = "available", converter = NumericBooleanConverter.class)
 public class PizzaEntity extends AuditableEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +50,6 @@ public class PizzaEntity extends AuditableEntity implements Serializable {
     private Boolean vegan;
 
     @Column(columnDefinition = "TINYINT", nullable = false)
-    private Boolean available;
+    private Boolean available = true;
 
 }

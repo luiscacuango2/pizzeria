@@ -1,6 +1,7 @@
 package com.luigi.pizza.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.luigi.pizza.persistence.audit.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderEntity {
+public class OrderEntity extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_order", nullable = false)

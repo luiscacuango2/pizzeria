@@ -29,17 +29,18 @@ public class UserSecurityService implements UserDetailsService {
         UserEntity userEntity = this.userRepository.findById(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
 
-//        System.out.println(userEntity);
+        // Extraemos los roles de la entidad
+        String[] roles = userEntity.getRoles().stream()
+                .map(UserRoleEntity::getRole)
+                .toArray(String[]::new);
 
-        String[] roles = userEntity.getRoles().stream().map(UserRoleEntity::getRole).toArray(String[]::new);
-
+        // Retornamos el UserDetails que usará Spring Security y nuestro AuditorAware
         return User.builder()
                 .username(userEntity.getUsername())
                 .password(userEntity.getPassword())
-                .authorities(this.grantedAuthorities(roles))  // permiso específico
-//                .roles(roles)       // Grupo de permisos
-                .accountLocked(userEntity.getLocked())
-                .disabled(userEntity.getDisabled())
+                .authorities(this.grantedAuthorities(roles)) // permiso específico
+                .accountLocked(Boolean.TRUE.equals(userEntity.getLocked())) // Manejo seguro de Nulls
+                .disabled(Boolean.TRUE.equals(userEntity.getDisabled()))
                 .build();
     }
 
@@ -55,8 +56,10 @@ public class UserSecurityService implements UserDetailsService {
         List<GrantedAuthority> authorities = new ArrayList<>(roles.length);
 
         for (String role : roles) {
+            // Añadir el rol con prefijo estándar de Spring
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
 
+            // Añadir permisos específicos para este rol
             for (String authority : getAuthorities(role)) {
                 authorities.add(new SimpleGrantedAuthority(authority));
             }
