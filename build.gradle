@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.luigi'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 description = 'Luigi Pizzeria Spring Data JPA'
 
 java {
@@ -47,6 +47,9 @@ dependencies {
 
     // Sanitización Profunda con Jsoup
     implementation 'org.jsoup:jsoup:1.17.2'
+
+    // Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'

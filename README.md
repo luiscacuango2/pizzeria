@@ -7,6 +7,7 @@
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 ![Rest API](https://img.shields.io/badge/Rest_API-009688?style=for-the-badge&logo=api&logoColor=white)
 ![Testing](https://img.shields.io/badge/Tests-Passing-success?style=for-the-badge&logo=githubactions&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 
 **Luigi's Pizza API** es una solución profesional para la gestión de pizzerías, diseñada bajo estándares de **Auditoría Total (Compliance 2026)**. El sistema integra una arquitectura desacoplada que combina la potencia de Spring Data JPA con la eficiencia de procedimientos almacenados en MySQL para procesos críticos de negocio.
 
@@ -82,7 +83,19 @@ El sistema utiliza una relación **1:N** entre `pizza_order` y `order_item` con 
     ```bash
     ./mvnw spring-boot:run
     ```
+---
+## Documentación Interactiva (OpenAPI)
 
+El proyecto expone una interfaz interactiva para pruebas rápidas de los endpoints auditados:
+
+* **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+* **JSON Definition**: `http://localhost:8080/v3/api-docs`
+
+> **Nota de Auditoría**: Para probar endpoints protegidos, use el botón **'Authorize'** e ingrese el token JWT generado en el login.
+## Verificación
+1. Inicia tu aplicación.
+2. Entra a http://localhost:8080/swagger-ui.html.
+3. Verás todos tus controladores (Pizza, Order, Customer).
 ---
 ## Pruebas y QA con Postman
 

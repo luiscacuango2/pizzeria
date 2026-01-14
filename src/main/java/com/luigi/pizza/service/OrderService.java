@@ -2,14 +2,12 @@ package com.luigi.pizza.service;
 
 import com.luigi.pizza.persistence.audit.AuditUsername;
 import com.luigi.pizza.persistence.entity.OrderEntity;
-import com.luigi.pizza.persistence.entity.PizzaEntity;
 import com.luigi.pizza.persistence.projection.OrderSummary;
 import com.luigi.pizza.persistence.repository.OrderRepository;
 import com.luigi.pizza.service.dto.AuditReportDto;
 import com.luigi.pizza.service.dto.OrderDto;
 import com.luigi.pizza.service.dto.RandomOrderDto;
 import com.luigi.pizza.service.mapper.OrderMapper;
-import com.luigi.pizza.web.util.SanitizerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +15,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,14 +37,15 @@ public class OrderService {
         this.orderMapper = orderMapper;
     }
 
+    @Transactional(readOnly = true) // Para evitar LazyInitialization
     public Page<OrderDto> getAllOrder(Pageable pageable) {
         // 1. Buscamos las entidades de forma paginada
         Page<OrderEntity> entities = this.orderRepository.findAll(pageable);
-
         // 2. Mapeamos a DTO (Record) para asegurar la inmutabilidad y seguridad
         return entities.map(this.orderMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
     public List<OrderDto> getTodayOrders() {
         LocalDateTime today = LocalDate.now().atTime(0, 0);
         return this.orderMapper.toDtoList(this.orderRepository.findAllByOrderDateAfter(today));
@@ -58,11 +56,11 @@ public class OrderService {
         return this.orderMapper.toDtoList(this.orderRepository.findAllByDeliveryMethodIn(deliveryMethods));
     }
 
+    @Transactional(readOnly = true)
     @Secured("ROLE_ADMIN")
     public Page<OrderDto> getCustomerOrders(Integer idCustomer, Pageable pageable) {
         // 1. Buscamos las entidades usando el repositorio paginado
         Page<OrderEntity> entities = this.orderRepository.findByIdCustomer(idCustomer, pageable);
-
         // 2. Convertimos la página de entidades a una página de DTOs (Records)
         // El método .map() de Page mantiene la metadata de paginación
         return entities.map(this.orderMapper::toDto);

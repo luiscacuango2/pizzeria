@@ -4,6 +4,7 @@ import com.luigi.pizza.persistence.entity.OrderEntity;
 import com.luigi.pizza.persistence.projection.OrderSummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.ListCrudRepository;
@@ -15,7 +16,6 @@ import java.util.List;
 
 public interface OrderRepository extends ListCrudRepository<OrderEntity, Integer>,
         PagingAndSortingRepository<OrderEntity, Integer> {
-    List<OrderEntity> findAllByOrderDateAfter(LocalDateTime date);
     List<OrderEntity> findAllByDeliveryMethodIn(List<String> deliveryMethods);
 
     // Consultar las Ordenes específicas de un usuario
@@ -50,11 +50,21 @@ public interface OrderRepository extends ListCrudRepository<OrderEntity, Integer
             @Param("v_username") String vUsername
     );
 
+    // Añadimos EntityGraph para la paginación principal
+    @Override
+    @EntityGraph(attributePaths = {"customer", "items"})
+    Page<OrderEntity> findAll(Pageable pageable);
+
     // Para consultas rápidas o reportes completos
     List<OrderEntity> findByIdCustomer(Integer idCustomer);
 
-    // Para la vista de usuario o paneles administrativos pesados
+    // Añadimos EntityGraph para búsquedas por cliente
+    @EntityGraph(attributePaths = {"customer", "items"})
     Page<OrderEntity> findByIdCustomer(Integer idCustomer, Pageable pageable);
+
+    // Para las órdenes de hoy
+    @EntityGraph(attributePaths = {"customer", "items"})
+    List<OrderEntity> findAllByOrderDateAfter(LocalDateTime date);
 
     // Para generar reportes de auditoria por usuario y rango de fechas
     List<OrderEntity> findByCreatedByAndCreatedDateBetween(String createdBy, LocalDateTime start, LocalDateTime end);
