@@ -3,11 +3,20 @@
 ![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2.x-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![Security](https://img.shields.io/badge/Security-JWT_Audited-success?style=for-the-badge)
-![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
-![Rest API](https://img.shields.io/badge/Rest_API-009688?style=for-the-badge&logo=api&logoColor=white)
-![Testing](https://img.shields.io/badge/Tests-Passing-success?style=for-the-badge&logo=githubactions&logoColor=white)
+![Hibernate](https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white)
+
+![Security](https://img.shields.io/badge/Security-JWT_Audited-success?style=for-the-badge&logo=springsecurity)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+![Audit](https://img.shields.io/badge/Audit-Full_Traceability-blue?style=for-the-badge)
+![Clean Code](https://img.shields.io/badge/Clean_Code-Certified-brightgreen?style=for-the-badge)
+![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)
+
+![Gradle](https://img.shields.io/badge/Gradle-8.x-02303A?style=for-the-badge&logo=gradle&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
+![OpenAPI](https://img.shields.io/badge/openapi-6BA53F?style=for-the-badge&logo=openapi&logoColor=white)
+
+---
 
 **Luigi's Pizza API** es una solución profesional para la gestión de pizzerías, diseñada bajo estándares de **Auditoría Total (Compliance 2026)**. El sistema integra una arquitectura desacoplada que combina la potencia de Spring Data JPA con la eficiencia de procedimientos almacenados en MySQL para procesos críticos de negocio.
 
@@ -29,6 +38,7 @@
 | :--- | :--- |
 | **Java 17 (LTS)** | Lenguaje robusto para lógica de negocio y tipado fuerte. |
 | **Spring Boot 3** | Ecosistema principal para servicios REST y persistencia. |
+| **Gradle** | Gestor de dependencias y automatización de construcción. |
 | **MySQL 8.0** | Motor de base de datos con soporte para procedimientos almacenados. |
 | **Spring Security** | Gestión de autenticación y protección de endpoints críticos. |
 | **Hibernate/JPA** | Mapeo objeto-relacional y gestión de ciclos de vida de entidades. |
@@ -62,7 +72,6 @@ El sistema utiliza una relación **1:N** entre `pizza_order` y `order_item` con 
 ### Requisitos previos
 * **Java 17+**
 * **MySQL 8.0**
-* **Maven 3.9+**
 
 ### Instalación de Base de Datos
 1.  **Esquema Principal:** Ejecute los scripts de creación de tablas.
@@ -81,9 +90,38 @@ El sistema utiliza una relación **1:N** entre `pizza_order` y `order_item` con 
 2.  **Configurar credenciales:** Ajuste el archivo `application.yml` o `application.properties` con sus credenciales de MySQL.
 3.  **Compilar y Correr:**
     ```bash
-    ./mvnw spring-boot:run
+    ./gradlew bootRun
     ```
 ---
+
+## Ejecución con Docker (Cloud Ready)
+
+Si prefieres no instalar Java o Gradle localmente, puedes desplegar la solución completa usando contenedores.
+
+### Opción 1: Docker Compose (Recomendado)
+Esta opción levanta tanto la **API** como la base de datos **MySQL** con los Stored Procedures ya configurados.
+
+```bash
+  docker-compose up --build
+```
+### Opción 2: Docker CLI
+
+Si ya tienes una base de datos MySQL corriendo y solo quieres levantar la API:
+1.  **Construir la imagen:
+```bash
+    docker build -t luiscacuango/pizzeria:v1 .
+```
+2.  **Correr el contenedor: Recuerda ajustar las variables de entorno para que apunten a tu base de datos actual.
+```bash
+    docker run -d -p 8080:8080 \
+      --name api-pizzeria \
+      -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/pizza_db \
+      -e SPRING_DATASOURCE_USERNAME=tu_usuario \
+      -e SPRING_DATASOURCE_PASSWORD=tu_password \
+      luiscacuango/pizzeria:v1
+```
+---
+
 ## Documentación Interactiva (OpenAPI)
 
 El proyecto expone una interfaz interactiva para pruebas rápidas de los endpoints auditados:
@@ -150,10 +188,23 @@ Para garantizar que los registros no sean alterados sin dejar rastro, seguimos e
 2. El OrderService recupera el username del SecurityContextHolder.
 3. Se invoca al @Procedure en el repositorio pasando el usuario como parámetro de auditoría.
 4. La base de datos ejecuta el INSERT en pizza_order y order_item con trazabilidad completa.
+---
+### Arquitectura de Seguridad y Trazabilidad
+
+Para cumplir con la directriz de **Auditoría Total**, el sistema implementa un flujo de datos unidireccional y seguro:
+
+1. **Intercepción de Identidad:** El `JwtFilter` valida el token del encabezado `Authorization`. Si es válido, inyecta el `Username` en el `SecurityContext` de Spring.
+2. **Auditoría en Persistencia:** Utilizamos un componente `AuditUsername` que actúa como puente. Mediante la anotación `@CreatedBy` (o capturándolo manualmente en el Service), el sistema garantiza que el desarrollador no tenga que "setear" el usuario a mano, evitando errores humanos.
+3. **Persistencia Atómica:** En procesos críticos como la creación de órdenes aleatorias, el `username` se pasa directamente al **Stored Procedure**. Esto asegura que la auditoría se registre en la misma transacción que el pedido, cumpliendo con las propiedades **ACID**.
+
+#### Ejemplo de Flujo de Datos:
+`Cliente (JWT) -> Spring Security Context -> Service -> Repositorio (@Procedure) -> MySQL (Audit Log)`
 
 ---
 ## Roadmap 2026
 - [ ] Implementación de WebSockets para actualizaciones de órdenes en tiempo real.
+- [ ] Dockerización completa de la solución.
+- [ ] Pipeline de CI/CD con GitHub Actions.
 - [ ] Integración con servicios de mensajería (WhatsApp/Email) para confirmación de pedidos.
 - [ ] Módulo de Reportes Avanzados con exportación a PDF/Excel auditada.
 

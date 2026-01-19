@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Servicio de Base de Datos
+  db-pizzeria:
+    image: mysql:8.0
+    container_name: db-luigi-pizzeria
+    restart: always
+    environment:
+      MYSQL_DATABASE: pizza_db
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: luigi_user
+      MYSQL_PASSWORD: luigi_password
+    ports:
+      - "3307:3306" # Mapeo al 3307 local para no chocar si ya tienes un MySQL instalado
+    volumes:
+      - db_data:/var/lib/mysql
+      # Opcional: Si tienes el script SQL, se ejecutará al iniciar
+      - ./src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./src/main/resources/db/procedure.sql:/docker-entrypoint-initdb.d/2-procedure.sql
+
+  # Servicio de la API (Tu aplicación Spring Boot)
+  api-pizzeria:
+    build: .
+    container_name: api-luigi-pizzeria
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-pizzeria
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-pizzeria:3306/pizza_db?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=luigi_user
+      - SPRING_DATASOURCE_PASSWORD=luigi_password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+volumes:
+  db_data:
